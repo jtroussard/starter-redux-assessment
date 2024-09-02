@@ -19,11 +19,33 @@ export default function CreatePhoto() {
     });
   }
 
+  async function validateFormData(formData) {
+    if (!formData) {
+      return false
+    }
+
+    try {
+      const response = await fetch(formData.imageUrl, {
+        method: 'HEAD'
+      });
+      if (response.ok) { return true }
+    } catch {
+      console.log(`Something went wrong, check url: ${formData.imageUrl}`)
+      return false
+    }
+  }
+
   function handleSubmit(event) {
-    event.preventDefault();
-    // Task 5: Dispatch the `addPhoto()` action creator, passing in the form data
-    dispatch(addPhoto(formData)) // I think some redux magic includes the state everytime an action is dispatched.
-    setFormData({ imageUrl: '', caption: '' });
+    if (validateFormData(formData)) {
+      event.preventDefault();
+      // Task 5: Dispatch the `addPhoto()` action creator, passing in the form data
+      dispatch(addPhoto(formData)) // I think some redux magic includes the state everytime an action is dispatched.
+      setFormData({ imageUrl: '', caption: '' });
+    } else {
+      const msg = "Form validation failed. Please check the form data and try again."
+      console.log(msg);
+      throw new Error(msg);
+    }
   }
 
   return (
